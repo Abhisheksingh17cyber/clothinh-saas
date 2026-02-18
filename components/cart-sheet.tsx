@@ -33,14 +33,15 @@ export function CartSheet() {
             })
 
             if (!response.ok) {
-                throw new Error("Checkout failed")
+                const errorData = await response.json()
+                throw new Error(errorData.error || "Checkout failed")
             }
 
             const data = await response.json()
             window.location.href = data.url
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
-            toast.error("Something went wrong with checkout")
+            toast.error(error.message || "Something went wrong with checkout")
         } finally {
             setIsLoading(false)
         }

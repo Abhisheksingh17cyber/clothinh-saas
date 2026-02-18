@@ -33,8 +33,8 @@ export async function POST(req: Request) {
         })
 
         return NextResponse.json({ url: session.url })
-    } catch (error) {
+    } catch (error: any) {
         console.error("[CHECKOUT_ERROR]", error)
-        return new NextResponse("Internal Error", { status: 500 })
+        return new NextResponse(JSON.stringify({ error: error.message }), { status: 500 })
     }
 }
