@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { Menu, X, ShoppingBag, Search } from "lucide-react"
+import { useCart } from "@/app/context/cart-context"
+import { CartSheet } from "./cart-sheet"
 
 const navLinks = [
   { label: "Collections", href: "#collections" },
@@ -13,6 +15,7 @@ const navLinks = [
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const { totalItems, openCart } = useCart()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,11 +28,10 @@ export function Navigation() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          isScrolled
-            ? "bg-background/90 backdrop-blur-md border-b border-border"
-            : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
+          ? "bg-background/90 backdrop-blur-md border-b border-border"
+          : "bg-transparent"
+          }`}
       >
         <nav className="flex items-center justify-between px-6 lg:px-12 py-4">
           <a
@@ -60,13 +62,16 @@ export function Navigation() {
               <Search className="w-5 h-5" />
             </button>
             <button
+              onClick={openCart}
               className="p-2 text-foreground/70 hover:text-foreground transition-colors relative"
               aria-label="Shopping bag"
             >
               <ShoppingBag className="w-5 h-5" />
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-accent text-accent-foreground text-[10px] flex items-center justify-center rounded-full">
-                0
-              </span>
+              {totalItems > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-accent text-accent-foreground text-[10px] flex items-center justify-center rounded-full">
+                  {totalItems}
+                </span>
+              )}
             </button>
             <button
               className="lg:hidden p-2 text-foreground/70 hover:text-foreground transition-colors"
@@ -79,22 +84,22 @@ export function Navigation() {
         </nav>
       </header>
 
+      <CartSheet />
+
       {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 z-[60] transition-all duration-500 lg:hidden ${
-          isOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-[60] transition-all duration-500 lg:hidden ${isOpen
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
+          }`}
       >
         <div
           className="absolute inset-0 bg-foreground/20 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         />
         <div
-          className={`absolute right-0 top-0 bottom-0 w-80 bg-card transition-transform duration-500 ${
-            isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={`absolute right-0 top-0 bottom-0 w-80 bg-card transition-transform duration-500 ${isOpen ? "translate-x-0" : "translate-x-full"
+            }`}
         >
           <div className="flex items-center justify-between p-6 border-b border-border">
             <span className="font-serif text-xl tracking-wider text-card-foreground">ATELIER</span>

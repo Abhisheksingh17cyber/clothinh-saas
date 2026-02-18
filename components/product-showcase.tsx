@@ -3,7 +3,9 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Heart, ShoppingBag } from "lucide-react"
+import { useRef } from "react"
 import { ScrollReveal } from "./scroll-animations"
+import { useCart } from "@/app/context/cart-context"
 
 const products = [
   {
@@ -49,6 +51,7 @@ function ProductCard({
 }) {
   const [isHovered, setIsHovered] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
+  const { addItem } = useCart()
 
   return (
     <ScrollReveal delay={index * 150} direction="up">
@@ -73,7 +76,10 @@ function ProductCard({
             className={`absolute inset-0 bg-foreground/10 flex items-end justify-center pb-6 transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-0"
               }`}
           >
-            <button className="bg-card text-card-foreground px-6 py-3 text-xs tracking-[0.2em] uppercase hover:bg-primary hover:text-primary-foreground transition-all duration-300 flex items-center gap-2">
+            <button
+              onClick={() => addItem(product)}
+              className="bg-card text-card-foreground px-6 py-3 text-xs tracking-[0.2em] uppercase hover:bg-primary hover:text-primary-foreground transition-all duration-300 flex items-center gap-2"
+            >
               <ShoppingBag className="w-4 h-4" />
               Add to Bag
             </button>
@@ -87,8 +93,8 @@ function ProductCard({
           >
             <Heart
               className={`w-4 h-4 transition-colors ${isLiked
-                  ? "fill-destructive text-destructive"
-                  : "text-card-foreground"
+                ? "fill-destructive text-destructive"
+                : "text-card-foreground"
                 }`}
             />
           </button>
