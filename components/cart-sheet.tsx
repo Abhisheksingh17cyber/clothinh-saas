@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useCart } from "@/app/context/cart-context"
 import {
     Sheet,
@@ -13,10 +14,37 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
 import { Trash2, ShoppingBag } from "lucide-react"
+import { toast } from "sonner"
 
 export function CartSheet() {
     const { items, removeItem, totalItems, subtotal, isCartOpen, setIsCartOpen } =
         useCart()
+    const [isLoading, setIsLoading] = useState(false)
+
+    const handleCheckout = async () => {
+        try {
+            setIsLoading(true)
+            const response = await fetch("/api/checkout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ items }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Checkout failed")
+            }
+
+            const data = await response.json()
+            window.location.href = data.url
+        } catch (error) {
+            console.error(error)
+            toast.error("Something went wrong with checkout")
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     return (
         <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
@@ -79,8 +107,16 @@ export function CartSheet() {
                             <span>Subtotal</span>
                             <span>${subtotal}</span>
                         </div>
-                        <button className="w-full bg-primary text-primary-foreground py-3 text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors">
-                            Checkout
+                        <button
+                            onClick={handleCheckout}
+                            disabled={isLoading}
+                            className="w-full bg-primary text-primary-foreground py-3 text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+                        >
+                            {isLoading ? (
+                                <span className="animate-pulse">Processing...</span>
+                            ) : (
+                                "Checkout"
+                            )}
                         </button>
                     </SheetFooter>
                 )}
