@@ -48,6 +48,7 @@ export function CraftProcessSection() {
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
+                  unoptimized
                 />
                 <div className="absolute inset-0 bg-foreground/5" />
               </div>

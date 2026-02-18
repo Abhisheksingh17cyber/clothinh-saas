@@ -61,6 +61,7 @@ export function CollectionsSection() {
                       fill
                       className="object-cover transition-transform duration-1000 group-hover:scale-105"
                       sizes="(max-width: 1024px) 100vw, 50vw"
+                      unoptimized
                     />
                     <div className="absolute inset-0 bg-foreground/5 group-hover:bg-foreground/0 transition-colors duration-500" />
                   </div>

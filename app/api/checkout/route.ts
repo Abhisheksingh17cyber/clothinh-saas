@@ -7,20 +7,25 @@ export async function POST(req: Request) {
         const { items } = await req.json()
 
         if (!items || items.length === 0) {
-            return new NextResponse("No items in cart", { status: 400 })
+            return new NextResponse(JSON.stringify({ error: "No items in cart" }), { status: 400 })
         }
 
-        // For demo purposes, we're using a hardcoded placeholder domain if not set
-        const domain = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+        if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.startsWith("sk_test_mock")) {
+            return new NextResponse(JSON.stringify({ error: "Stripe Secret Key is missing or invalid. Please add it to your .env file." }), { status: 500 })
+        }
+
+        // Determine domain dynamically
+        const origin = req.headers.get("origin")
+        const domain = process.env.NEXT_PUBLIC_APP_URL || origin || "http://localhost:3000"
 
         const line_items = items.map((item: CartItem) => ({
             price_data: {
                 currency: "usd",
                 product_data: {
                     name: item.name,
-                    images: [domain + item.image], // Stripe expects absolute URLs
+                    images: [item.image.startsWith("http") ? item.image : `${domain}${item.image}`],
                 },
-                unit_amount: item.price * 100, // Stripe expects amounts in cents
+                unit_amount: item.price * 100,
             },
             quantity: item.quantity,
         }))
